@@ -235,10 +235,7 @@
                 }
             });
 
-            groups["1"] = shuffle(groups["1"]);
-            groups["2"] = shuffle(groups["2"]);
-            groups["3"] = shuffle(groups["3"]);
-
+            
             finalTeams = [];
 
             const minTeams = Math.min(groups["1"].length, groups["2"].length, groups["3"].length);
@@ -249,7 +246,7 @@
             }
 
             let leftovers = [...groups["1"], ...groups["2"], ...groups["3"]];
-            leftovers = shuffle(leftovers);
+            
 
             while (leftovers.length > 0) {
                 const size = Math.min(4, leftovers.length);

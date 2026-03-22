@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Baunanians Team Maker</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Space+Grotesk:wght@500;600&amp;display=swap');
+        
+        body { 
+            font-family: 'Inter', system_ui, sans-serif; 
+            background: #0d1117;
+            background-image: 
+                linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+            background-size: 40px 40px;
+        }
+        
+        .title-font { 
+            font-family: 'Space Grotesk', sans-serif; 
+        }
+        
+        .github-card {
+            background: #161b22;
+            border: 1px solid #30363d;
+        }
+        
+        /* === COPILOT-STYLE GLOWING EFFECTS === */
+        .glow-upload {
+            box-shadow: 
+                0 0 20px rgba(88, 166, 255, 0.45),
+                0 0 40px rgba(139, 92, 246, 0.35),
+                0 0 70px rgba(168, 85, 247, 0.25);
+            transition: box-shadow 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .glow-upload:hover {
+            box-shadow: 
+                0 0 30px rgba(88, 166, 255, 0.65),
+                0 0 55px rgba(139, 92, 246, 0.55),
+                0 0 90px rgba(168, 85, 247, 0.4);
+        }
+
+        .glow-team {
+            box-shadow: 
+                0 0 15px rgba(88, 166, 255, 0.35),
+                0 0 35px rgba(139, 92, 246, 0.25),
+                0 0 60px rgba(168, 85, 247, 0.15);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .glow-team:hover {
+            box-shadow: 
+                0 0 25px rgba(88, 166, 255, 0.6),
+                0 0 50px rgba(139, 92, 246, 0.5),
+                0 0 85px rgba(168, 85, 247, 0.35);
+            transform: translateY(-4px) scale(1.01);
+        }
+
+        .glow-header {
+            box-shadow: 
+                0 0 25px rgba(88, 166, 255, 0.3),
+                0 0 50px rgba(139, 92, 246, 0.2);
+        }
+
+        .drop-zone { 
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
+        }
+        .drop-zone.dragover { 
+            background-color: #21262d; 
+            border-color: #58a6ff; 
+            transform: scale(1.02); 
+        }
+        
+        .header-gradient {
+            background: linear-gradient(90deg, #21262d, #0d1117);
+        }
+    </style>
+</head>
+<body class="text-gray-200">
+    <div class="max-w-6xl mx-auto px-6 py-8">
+        <!-- Header with glow -->
+        <div class="glow-header flex items-center justify-between mb-10 header-gradient rounded-3xl p-6 border border-[#30363d]">
+            <div class="flex items-center gap-4">
+                <div class="w-10 h-10 bg-[#21262d] rounded-2xl flex items-center justify-center text-3xl">🐙</div>
+                <div>
+                    <h1 class="title-font text-4xl font-semibold tracking-tighter text-white">Baunanians Team Maker</h1>
+                    <p class="text-[#8b949e] mt-1 text-sm">For Workshop on Python &amp; ML • Balanced Teams by Year</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-3">
+                <div class="px-5 py-2 bg-[#21262d] border border-[#30363d] rounded-2xl text-sm flex items-center gap-2">
+                    <div class="w-3 h-3 bg-[#39d353] rounded-full animate-pulse"></div>
+                    <span class="font-medium text-[#c9d1d9]">Online</span>
+                </div>
+            </div>
+        </div>
+        <div id="upload-card" 
+             class="drop-zone github-card glow-upload rounded-3xl p-16 text-center cursor-pointer hover:border-[#58a6ff]">
+            <div class="mx-auto w-24 h-24 bg-[#21262d] rounded-3xl flex items-center justify-center mb-8">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-14 h-14 text-[#58a6ff]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 16a4 4 0 01-.88-7.903 5 5 0 0110.025 1.65L12 16V8" />
+                </svg>
+            </div>
+            <h2 class="text-3xl font-semibold text-white mb-3">Upload Registration Sheet</h2>
+            <p class="text-[#8b949e] max-w-md mx-auto mb-10">
+                CSV or XLSX only <br>
+                PDF? Export to Excel first.
+            </p>
+            <input type="file" id="file-input" accept=".csv,.xlsx,.xls" class="hidden">
+            <button onclick="document.getElementById('file-input').click()" 
+                    class="px-10 py-5 bg-[#238636] hover:bg-[#2ea043] text-white font-medium rounded-2xl shadow-lg transition-all flex items-center gap-3 mx-auto text-lg">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                </svg>
+                Choose File
+            </button>
+        </div>
+
+        <!-- Processing -->
+        <div id="status" class="hidden mt-12 text-center">
+            <div class="inline-flex items-center gap-4 bg-[#161b22] px-10 py-4 rounded-2xl border border-[#30363d]">
+                <div class="animate-spin w-6 h-6 border-4 border-[#58a6ff] border-t-transparent rounded-full"></div>
+                <span id="status-text" class="font-medium text-[#c9d1d9]">Building your teams...</span>
+            </div>
+        </div>
+
+        <!-- Results -->
+        <div id="results" class="hidden mt-12">
+            <div class="flex justify-between items-center mb-8">
+                <div>
+                    <h2 class="text-3xl font-semibold text-white">Teams Created</h2>
+                    <p id="summary" class="text-[#8b949e]"></p>
+                </div>
+                <button onclick="downloadExcel()" 
+                        class="flex items-center gap-3 bg-[#238636] hover:bg-[#2ea043] text-white px-8 py-4 rounded-2xl font-medium shadow-lg transition-all">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v-4m0 0l4 4m-4-4l4-4m12 0v4m0 0l-4-4m4 4l-4 4" />
+                    </svg>
+                    Download Excel
+                </button>
+            </div>
+
+            <div id="teams-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+
+            <div class="mt-12 github-card rounded-3xl p-8 border border-[#30363d]">
+                <h3 class="font-semibold text-lg mb-4 text-white">How Baunanians Teams are formed</h3>
+                <div class="text-sm text-[#8b949e] space-y-3">
+                    <p><span class="text-[#58a6ff]">• Balanced teams (3 members):</span> 1 from Year 1 + 1 from Year 2 + 1 from Year 3</p>
+                    <p><span class="text-[#58a6ff]">• BCA Rule:</span> BCA 1st = Year 1 • BCA 2nd = Year 3</p>
+                    <p><span class="text-[#58a6ff]">• Leftovers:</span> Automatically grouped into teams of 4</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let allStudents = [];
+        let finalTeams = [];
+
+        function shuffle(array) {
+            const newArray = [...array];
+            for (let i = newArray.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+            }
+            return newArray;
+        }
+
+        function computeEffectiveYear(student) {
+            let year = parseInt(student.year);
+            if (isNaN(year)) year = 1;
+            const branch = String(student.branch || "").toUpperCase().trim();
+            if (branch === "BCA") {
+                if (year === 1) return 1;
+                if (year === 2) return 3;
+            }
+            return year;
+        }
+
+        function processFile(file) {
+            document.getElementById("upload-card").classList.add("hidden");
+            document.getElementById("status").classList.remove("hidden");
+            document.getElementById("status-text").textContent = "Reading file...";
+
+            const reader = new FileReader();
+
+            if (file.name.toLowerCase().endsWith(".csv")) {
+                reader.onload = function(e) {
+                    Papa.parse(e.target.result, {
+                        header: true,
+                        skipEmptyLines: true,
+                        complete: function(results) {
+                            allStudents = results.data.filter(row => row.name && row.name.trim() !== "");
+                            createTeams();
+                        }
+                    });
+                };
+                reader.readAsText(file);
+            } else if (file.name.toLowerCase().match(/\.xlsx?$/)) {
+                reader.onload = function(e) {
+                    const data = new Uint8Array(e.target.result);
+                    const workbook = XLSX.read(data, { type: "array" });
+                    const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+                    allStudents = XLSX.utils.sheet_to_json(firstSheet);
+                    createTeams();
+                };
+                reader.readAsArrayBuffer(file);
+            } else {
+                alert("Only CSV or XLSX files are supported.");
+                resetUI();
+            }
+        }
+
+        function createTeams() {
+            document.getElementById("status-text").textContent = "Forming balanced teams...";
+
+            allStudents = allStudents.map(s => ({
+                name: String(s.name || s.Name || "").trim(),
+                roll: String(s.roll || s.Roll || s["# roll"] || "").trim(),
+                mobile: String(s.mobile || s.Mobile || "").trim(),
+                branch: String(s.branch || s.Branch || "").trim(),
+                year: String(s.year || s.Year || "").trim(),
+                message: String(s.message || s.Message || "").trim()
+            })).filter(s => s.name);
+
+            let groups = { "1": [], "2": [], "3": [] };
+
+            allStudents.forEach(student => {
+                const eff = computeEffectiveYear(student);
+                if (eff >= 1 && eff <= 3) {
+                    student.effYear = eff;
+                    groups[eff].push(student);
+                }
+            });
+
+            groups["1"] = shuffle(groups["1"]);
+            groups["2"] = shuffle(groups["2"]);
+            groups["3"] = shuffle(groups["3"]);
+
+            finalTeams = [];
+
+            const minTeams = Math.min(groups["1"].length, groups["2"].length, groups["3"].length);
+            for (let i = 0; i < minTeams; i++) {
+                let team = [groups["1"].shift(), groups["2"].shift(), groups["3"].shift()];
+                team.sort((a, b) => a.effYear - b.effYear);
+                finalTeams.push({ type: "balanced", members: team });
+            }
+
+            let leftovers = [...groups["1"], ...groups["2"], ...groups["3"]];
+            leftovers = shuffle(leftovers);
+
+            while (leftovers.length > 0) {
+                const size = Math.min(4, leftovers.length);
+                const teamMembers = leftovers.splice(0, size);
+                teamMembers.sort((a, b) => parseInt(a.year) - parseInt(b.year));
+                finalTeams.push({ type: "leftover", members: teamMembers });
+            }
+
+            renderResults();
+        }
+
+        function renderResults() {
+            document.getElementById("status").classList.add("hidden");
+            const resultsDiv = document.getElementById("results");
+            resultsDiv.classList.remove("hidden");
+
+            const container = document.getElementById("teams-container");
+            container.innerHTML = "";
+
+            finalTeams.forEach((team, idx) => {
+                const teamDiv = document.createElement("div");
+                teamDiv.className = "github-card glow-team rounded-3xl overflow-hidden";
+
+                let headerHTML = `
+                    <div class="px-6 py-5 bg-[#21262d] flex items-center justify-between border-b border-[#30363d]">
+                        <div class="flex items-center gap-3">
+                            <span class="font-bold text-2xl text-white">Team ${idx + 1}</span>
+                            <span class="text-xs px-4 py-1 bg-[#30363d] text-[#8b949e] rounded-full">${team.type === 'balanced' ? '3 members' : team.members.length + ' members'}</span>
+                        </div>
+                    </div>`;
+
+                let membersHTML = `<div class="divide-y divide-[#30363d]">`;
+                team.members.forEach(member => {
+                    membersHTML += `
+                        <div class="px-6 py-5 flex justify-between items-center">
+                            <div>
+                                <div class="font-semibold text-white">${member.name}</div>
+                                <div class="text-xs text-[#8b949e]">${member.roll} • ${member.branch} • Year ${member.year}</div>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-xs font-mono text-[#39d353]">${member.mobile}</div>
+                            </div>
+                        </div>`;
+                });
+                membersHTML += `</div>`;
+
+                teamDiv.innerHTML = headerHTML + membersHTML;
+                container.appendChild(teamDiv);
+            });
+
+            const totalStudents = allStudents.length;
+            const balanced = finalTeams.filter(t => t.type === "balanced").length;
+            document.getElementById("summary").innerHTML = `
+                ${totalStudents} students → ${finalTeams.length} teams<br>
+                <span class="text-[#39d353]">${balanced} balanced teams of 3</span> • ${finalTeams.length - balanced} leftover teams
+            `;
+        }
+
+        function downloadExcel() {
+            if (!finalTeams.length) return;
+            let data = [["Team ID", "Name", "Roll", "Mobile", "Branch", "Year", "Type"]];
+            finalTeams.forEach((team, teamIdx) => {
+                team.members.forEach(member => {
+                    data.push([
+                        `Team ${teamIdx + 1}`,
+                        member.name,
+                        member.roll,
+                        member.mobile,
+                        member.branch,
+                        member.year,
+                        team.type === "balanced" ? "Balanced" : "Leftover"
+                    ]);
+                });
+            });
+            const ws = XLSX.utils.aoa_to_sheet(data);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "Teams");
+            ws["!cols"] = [{wch: 8}, {wch: 25}, {wch: 15}, {wch: 14}, {wch: 12}, {wch: 6}, {wch: 12}];
+            XLSX.writeFile(wb, "Baunanians_Teams.xlsx");
+        }
+
+        function resetUI() {
+            document.getElementById("upload-card").classList.remove("hidden");
+            document.getElementById("status").classList.add("hidden");
+            document.getElementById("results").classList.add("hidden");
+        }
+
+        document.getElementById("file-input").addEventListener("change", function(e) {
+            if (e.target.files.length > 0) processFile(e.target.files[0]);
+        });
+
+        const dropZone = document.getElementById("upload-card");
+        dropZone.addEventListener("dragover", (e) => { e.preventDefault(); dropZone.classList.add("dragover"); });
+        dropZone.addEventListener("dragleave", () => dropZone.classList.remove("dragover"));
+        dropZone.addEventListener("drop", (e) => {
+            e.preventDefault();
+            dropZone.classList.remove("dragover");
+            if (e.dataTransfer.files.length > 0) processFile(e.dataTransfer.files[0]);
+        });
+
+        window.onload = function() {
+            console.log("%c✅ Baunanians Team Maker (GitHub + Copilot Glow) is ready!", "color:#58a6ff; font-weight:600");
+        };
+    </script>
+</body>
+</html>
